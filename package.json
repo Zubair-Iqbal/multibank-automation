@@ -1,0 +1,19 @@
+{
+  "name": "multibank-automation",
+  "version": "1.0.0",
+  "description": "Production-grade Playwright automation framework for MultiBank trading platform",
+  "scripts": {
+    "test": "playwright test",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:navigation": "playwright test tests/navigation/",
+    "test:trading": "playwright test tests/trading/",
+    "test:content": "playwright test tests/content/",
+    "report": "playwright show-report",
+    "install:browsers": "playwright install --with-deps"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.0"
+  }
+}

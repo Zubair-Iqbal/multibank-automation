@@ -1,0 +1,20 @@
+{
+  "expectedNavItems": [
+    "Trade",
+    "Markets",
+    "About Us",
+    "Download"
+  ],
+  "expectedNavItemsPartial": [
+    "Trade",
+    "Market"
+  ],
+  "baseUrl": "https://trade.multibank.io",
+  "routes": {
+    "home": "/",
+    "whyMultibank": "/why-multibank",
+    "markets": "/markets",
+    "download": "/download"
+  },
+  "minNavLinkCount": 3
+}

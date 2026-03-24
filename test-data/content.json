@@ -1,0 +1,12 @@
+{
+  "appStoreUrlPattern": "apps.apple.com",
+  "googlePlayUrlPattern": "play.google.com",
+  "whyMultibankPath": "/why-multibank",
+  "expectedWhyMultibankSections": [
+    "Why MultiBank",
+    "Regulation",
+    "Security",
+    "Award"
+  ],
+  "minContentSections": 3
+}

@@ -1,0 +1,13 @@
+{
+  "categories": [
+    "All",
+    "Forex",
+    "Crypto",
+    "Stocks",
+    "Indices",
+    "Commodities"
+  ],
+  "minPairCount": 1,
+  "expectedPairFormat": "XXX/YYY",
+  "spotPagePath": "/"
+}
