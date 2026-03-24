@@ -3,7 +3,9 @@
   "spotSectionHeading": "Spot market",
   "cryptoPriceListHeading": "Today's top crypto prices",
   "categories": ["Hot", "Gainers", "Losers"],
+  "switchableTabs": ["Gainers", "Losers"],
   "minCellsPerRow": 3,
   "minAssetRowCount": 3,
-  "assetDetailPathPrefix": "/explore/"
+  "assetDetailPathPrefix": "/explore/",
+  "assetLinkPattern": "^\\/explore\\/[A-Z0-9]+$"
 }

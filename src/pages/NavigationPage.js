@@ -129,12 +129,13 @@ class NavigationPage extends BasePage {
   }
 
   /**
-   * Click a main-nav link by its label and wait for navigation.
-   * @param {string} label
+   * Click a main-nav link by its label and wait for the URL to update.
+   * @param {string} label        - visible link text, e.g. 'Explore'
+   * @param {string} expectedRoute - route to wait for, e.g. '/en-AE/explore'
    */
-  async clickNavLink(label) {
+  async clickNavLink(label, expectedRoute) {
     await this.page.locator(`nav[aria-label="Main"] a:has-text("${label}")`).first().click();
-    await this.waitForPageLoad();
+    await this.waitForUrl(`**${expectedRoute}`);
   }
 
   /** @returns {Promise<boolean>} */

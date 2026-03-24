@@ -52,7 +52,7 @@ test.describe('Download Section', () => {
       homePage.clickDownloadApp(),
     ]);
     await storePage.waitForLoadState('domcontentloaded');
-    expect(storePage.url()).toMatch(/play\.google\.com|apps\.apple\.com/);
+    expect(storePage.url()).toMatch(new RegExp(data.storeUrlPattern));
   });
 });
 

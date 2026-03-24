@@ -46,20 +46,13 @@ test.describe('Navigation Routing', () => {
     await navigationPage.goToHome();
   });
 
-  test('clicking "Explore" navigates to the explore page', async ({ navigationPage }) => {
-    await navigationPage.clickExplore(data.routes.explore);
-    expect(navigationPage.getUrl()).toContain(data.routes.explore);
-  });
-
-  test('clicking "Features" navigates to the features page', async ({ navigationPage }) => {
-    await navigationPage.clickFeatures(data.routes.features);
-    expect(navigationPage.getUrl()).toContain(data.routes.features);
-  });
-
-  test('clicking "Company" navigates to the company page', async ({ navigationPage }) => {
-    await navigationPage.clickCompany(data.routes.company);
-    expect(navigationPage.getUrl()).toContain(data.routes.company);
-  });
+  // Parametrized: one test per nav item, driven entirely from test data
+  for (const { text, href } of data.mainNavItems) {
+    test(`clicking "${text}" navigates to the correct page`, async ({ navigationPage }) => {
+      await navigationPage.clickNavLink(text, href);
+      expect(navigationPage.getUrl()).toContain(href);
+    });
+  }
 
   test('navigating back from a sub-page returns to home', async ({ navigationPage }) => {
     await navigationPage.clickExplore(data.routes.explore);

@@ -44,17 +44,13 @@ test.describe('Category Tabs', () => {
     expect(activeText).toBe('Hot');
   });
 
-  test('clicking "Gainers" tab makes it active', async ({ tradingPage }) => {
-    await tradingPage.clickTab('Gainers');
-    const activeText = await tradingPage.getActiveTabText();
-    expect(activeText).toBe('Gainers');
-  });
-
-  test('clicking "Losers" tab makes it active', async ({ tradingPage }) => {
-    await tradingPage.clickTab('Losers');
-    const activeText = await tradingPage.getActiveTabText();
-    expect(activeText).toBe('Losers');
-  });
+  // Parametrized: one test per switchable tab, driven entirely from test data
+  for (const tab of data.switchableTabs) {
+    test(`clicking "${tab}" tab makes it active`, async ({ tradingPage }) => {
+      await tradingPage.clickTab(tab);
+      expect(await tradingPage.getActiveTabText()).toBe(tab);
+    });
+  }
 
   test('switching tabs still shows asset rows', async ({ tradingPage }) => {
     await tradingPage.clickTab('Losers');
@@ -99,7 +95,7 @@ test.describe('Asset Data Structure', () => {
     const hrefs = await tradingPage.getAssetLinkHrefs(5);
     expect(hrefs.length).toBeGreaterThan(0);
     for (const href of hrefs) {
-      expect(href).toMatch(/^\/explore\/[A-Z0-9]+$/);
+      expect(href).toMatch(new RegExp(data.assetLinkPattern));
     }
   });
 

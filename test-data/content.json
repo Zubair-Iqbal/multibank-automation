@@ -35,5 +35,6 @@
     "Proven track record",
     "Secure & trusted"
   ],
-  "contactUsHref": "/en-AE/support/contact-us"
+  "contactUsHref": "/en-AE/support/contact-us",
+  "storeUrlPattern": "play\\.google\\.com|apps\\.apple\\.com"
 }
