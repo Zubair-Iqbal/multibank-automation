@@ -1,4 +1,5 @@
 const { BasePage } = require('./BasePage');
+const { retry } = require('../utils/helpers');
 
 /**
  * TradingPage - Models the Spot Market section on /en-AE/explore.
@@ -70,10 +71,13 @@ class TradingPage extends BasePage {
 
   /**
    * Wait for virtual table rows to be rendered (data loaded from API).
+   * Wrapped in retry with exponential backoff to handle transient render delays.
    */
   async waitForTableData() {
-    await this.assetTable.waitFor({ state: 'visible', timeout: 20000 });
-    await this.assetRows.first().waitFor({ state: 'visible', timeout: 20000 });
+    await retry(async () => {
+      await this.assetTable.waitFor({ state: 'visible', timeout: 20000 });
+      await this.assetRows.first().waitFor({ state: 'visible', timeout: 20000 });
+    }, 3, 200);
   }
 
   /** @returns {Promise<boolean>} */

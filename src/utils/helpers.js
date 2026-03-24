@@ -33,20 +33,21 @@ function isAbsoluteUrl(href) {
  * @param {string} base
  * @returns {string}
  */
-function normalizeUrl(href, base = 'https://trade.multibank.io') {
+function normalizeUrl(href, base = 'https://mb.io') {
   if (!href) return '';
   if (isAbsoluteUrl(href)) return href;
   return `${base}${href.startsWith('/') ? '' : '/'}${href}`;
 }
 
 /**
- * Retry an async function up to maxAttempts times.
- * @param {Function} fn
- * @param {number} maxAttempts
- * @param {number} delayMs
+ * Retry an async function with exponential backoff.
+ * Delay after attempt N = baseDelayMs * 2^(N-1)  (e.g. 200 → 400 → 800 ms)
+ * @param {Function} fn           - Async function to retry
+ * @param {number}   maxAttempts  - Maximum number of attempts (default 3)
+ * @param {number}   baseDelayMs  - Initial delay in ms; doubles each retry (default 200)
  * @returns {Promise<any>}
  */
-async function retry(fn, maxAttempts = 3, delayMs = 500) {
+async function retry(fn, maxAttempts = 3, baseDelayMs = 200) {
   let lastError;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -54,7 +55,8 @@ async function retry(fn, maxAttempts = 3, delayMs = 500) {
     } catch (err) {
       lastError = err;
       if (attempt < maxAttempts) {
-        await new Promise((res) => setTimeout(res, delayMs));
+        const delay = baseDelayMs * Math.pow(2, attempt - 1);
+        await new Promise((res) => setTimeout(res, delay));
       }
     }
   }
