@@ -1,11 +1,9 @@
 {
   "explorePath": "/en-AE/explore",
-  "spotSectionTitle": "Today's top crypto prices",
-  "categories": [
-    { "label": "Hot",     "value": "hot" },
-    { "label": "Gainers", "value": "gainers" },
-    { "label": "Losers",  "value": "losers" }
-  ],
-  "minPairCount": 1,
-  "assetFields": ["symbol", "name", "price", "changePercent"]
+  "spotSectionHeading": "Spot market",
+  "cryptoPriceListHeading": "Today's top crypto prices",
+  "categories": ["Hot", "Gainers", "Losers"],
+  "minCellsPerRow": 3,
+  "minAssetRowCount": 3,
+  "assetDetailPathPrefix": "/explore/"
 }
