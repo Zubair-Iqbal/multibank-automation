@@ -1,22 +1,8 @@
-/**
- * Trading Functionality Tests — Part 3
- *
- * Validates the Spot Market section on /en-AE/explore:
- *  - Section and table visibility
- *  - Category tabs (Hot / Gainers / Losers) presence and interaction
- *  - Asset row data structure and API-backed price/change validation
- *
- * Test data: test-data/trading.json (no hard-coded values in assertions)
- */
-
 const { test, expect } = require('../../src/fixtures');
 const { loadTestData } = require('../../src/utils/helpers');
 
 const data = loadTestData('trading');
 
-// ─────────────────────────────────────────────────────────────
-// Suite 1 — Spot Market Section Visibility
-// ─────────────────────────────────────────────────────────────
 test.describe('Spot Market Section', () => {
   test.beforeEach(async ({ tradingPage }) => {
     await tradingPage.goToExplore();
@@ -31,9 +17,6 @@ test.describe('Spot Market Section', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// Suite 2 — Category Tabs
-// ─────────────────────────────────────────────────────────────
 test.describe('Category Tabs', () => {
   test.beforeEach(async ({ tradingPage }) => {
     await tradingPage.goToExplore();
@@ -44,7 +27,6 @@ test.describe('Category Tabs', () => {
     expect(activeText).toBe('Hot');
   });
 
-  // Parametrized: one test per switchable tab, driven entirely from test data
   for (const tab of data.switchableTabs) {
     test(`clicking "${tab}" tab makes it active`, async ({ tradingPage }) => {
       await tradingPage.clickTab(tab);
@@ -77,9 +59,6 @@ test.describe('Category Tabs', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// Suite 3 — Asset Data Structure
-// ─────────────────────────────────────────────────────────────
 test.describe('Asset Data Structure', () => {
   test.beforeEach(async ({ tradingPage }) => {
     await tradingPage.goToExplore();
@@ -106,8 +85,6 @@ test.describe('Asset Data Structure', () => {
     const apiEntry = marketData.find(d => d.base === symbol);
     expect(apiEntry, `Symbol "${symbol}" not found in API response`).toBeTruthy();
 
-    // API: close = 71191.39 → UI shows "$71,191.39"
-    // Strip commas from row text and check the integer part is present
     const rowText = await tradingPage.getAssetRowText(symbol);
     const rowTextNormalized = rowText.replace(/,/g, '');
     const priceIntPart = String(Math.floor(apiEntry.close));
@@ -121,7 +98,6 @@ test.describe('Asset Data Structure', () => {
     const apiEntry = marketData.find(d => d.base === symbol);
     expect(apiEntry, `Symbol "${symbol}" not found in API response`).toBeTruthy();
 
-    // API: changePercentFormatted = "-8.65" → UI shows "8.65%" (minus stripped; direction shown via color/arrow)
     const rowText = await tradingPage.getAssetRowText(symbol);
     const changeAbs = apiEntry.changePercentFormatted.replace('-', '');
     expect(rowText).toContain(changeAbs);

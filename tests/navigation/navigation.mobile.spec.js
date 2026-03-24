@@ -1,26 +1,10 @@
-/**
- * Mobile Navigation Tests — Part 2 (responsive)
- *
- * Validates navigation behaviour at a mobile viewport (390 × 844):
- *  - Desktop nav is hidden; hamburger button is shown instead
- *  - Opening the menu reveals a dialog with internal nav links
- *  - Closing the menu hides the dialog
- *  - Tapping a mobile nav link routes to the correct page
- *
- * Test data: test-data/navigation.json (no hard-coded values in assertions)
- */
-
 const { test, expect } = require('../../src/fixtures');
 const { loadTestData } = require('../../src/utils/helpers');
 
 const data = loadTestData('navigation');
 
-// Pin every test in this file to a mobile viewport
 test.use({ viewport: data.mobileViewport });
 
-// ─────────────────────────────────────────────────────────────
-// Suite — Mobile Navigation
-// ─────────────────────────────────────────────────────────────
 test.describe('Mobile Navigation', () => {
   test.beforeEach(async ({ navigationPage }) => {
     await navigationPage.goToHome();
@@ -47,8 +31,6 @@ test.describe('Mobile Navigation', () => {
     await navigationPage.openMobileMenu();
     const hrefs = await navigationPage.getMobileMenuLinkHrefs();
     expect(hrefs.length).toBeGreaterThan(0);
-    // The menu may include external links (e.g. token.multibankgroup.com)
-    // — assert that at least some links are internal /en-AE/ paths
     const internalLinks = hrefs.filter(h => h.startsWith(data.mobileMenuNavLinkPrefix));
     expect(internalLinks.length).toBeGreaterThan(0);
   });
@@ -64,7 +46,6 @@ test.describe('Mobile Navigation', () => {
     const hrefs = await navigationPage.getMobileMenuLinkHrefs();
     const exploreHref = hrefs.find(h => h.includes('/explore'));
     expect(exploreHref).toBeTruthy();
-    // Click via the mobile menu dialog — desktop nav is hidden at this viewport
     await navigationPage.clickMobileMenuLink(exploreHref, data.routes.explore);
     expect(navigationPage.getUrl()).toContain(data.routes.explore);
   });

@@ -1,13 +1,3 @@
-/**
- * Config Singleton — single source of truth for environment-specific settings.
- *
- * Select an environment via the TEST_ENV environment variable:
- *   TEST_ENV=production  npx playwright test   (default)
- *   TEST_ENV=staging     npx playwright test
- *
- * The exported `config` object is frozen — mutating it at runtime throws.
- */
-
 const ENVIRONMENTS = {
   production: {
     baseUrl: 'https://mb.io',
@@ -18,7 +8,7 @@ const ENVIRONMENTS = {
       api:        20000,
       expect:     15000,
     },
-    homePath:    '/en-AE',
+    homePath:     '/en-AE',
     localeSuffix: 'en-AE',
   },
 
@@ -31,7 +21,7 @@ const ENVIRONMENTS = {
       api:        30000,
       expect:     20000,
     },
-    homePath:    '/en-AE',
+    homePath:     '/en-AE',
     localeSuffix: 'en-AE',
   },
 };

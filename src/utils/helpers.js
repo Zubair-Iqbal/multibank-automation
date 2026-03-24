@@ -1,16 +1,7 @@
-/**
- * Utility helpers for the MultiBank automation framework.
- */
-
 const fs = require('fs');
 const path = require('path');
 const { logger } = require('./logger');
 
-/**
- * Load test data from the test-data directory.
- * @param {string} fileName - File name without extension (e.g., 'navigation')
- * @returns {object}
- */
 function loadTestData(fileName) {
   const filePath = path.resolve(__dirname, '../../test-data', `${fileName}.json`);
   if (!fs.existsSync(filePath)) {
@@ -19,14 +10,6 @@ function loadTestData(fileName) {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-/**
- * Retry an async function with exponential backoff.
- * Delay after attempt N = baseDelayMs * 2^(N-1)  (e.g. 200 → 400 → 800 ms)
- * @param {Function} fn           - Async function to retry
- * @param {number}   maxAttempts  - Maximum number of attempts (default 3)
- * @param {number}   baseDelayMs  - Initial delay in ms; doubles each retry (default 200)
- * @returns {Promise<any>}
- */
 async function retry(fn, maxAttempts = 3, baseDelayMs = 200) {
   let lastError;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {

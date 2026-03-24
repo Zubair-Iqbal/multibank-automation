@@ -6,11 +6,6 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
-    inputs:
-      browser:
-        description: 'Browser to run tests on (leave empty for all)'
-        required: false
-        default: ''
 
 jobs:
   test:
@@ -51,6 +46,7 @@ jobs:
           name: playwright-report-${{ matrix.browser }}
           path: playwright-report/
           retention-days: 14
+          overwrite: true
 
       - name: Upload test results (on failure)
         if: failure()
@@ -59,3 +55,4 @@ jobs:
           name: test-results-${{ matrix.browser }}
           path: test-results/
           retention-days: 7
+          overwrite: true

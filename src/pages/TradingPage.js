@@ -2,45 +2,19 @@ const { BasePage } = require('./BasePage');
 const { retry } = require('../utils/helpers');
 const { logger } = require('../utils/logger');
 
-/**
- * TradingPage - Models the Spot Market section on /en-AE/explore.
- *
- * Real DOM structure:
- *  - Section heading: <h2>Spot market</h2>
- *  - Crypto price list heading: <h3>Today's top crypto prices</h3> (desktop only)
- *  - Category tabs: plain <button> elements (no role="tab")
- *    Active tab has classes: bg-lighter + text-white
- *  - Asset table: TanStack virtual table
- *    Rows: tbody tr[data-index]
- *    Asset links: tbody tr a[href^="/explore/"]
- *    Columns: Asset | Price | 24h Change | Last 7 days
- */
 class TradingPage extends BasePage {
   constructor(page) {
     super(page);
 
-    // Spot market section heading
     this.spotSectionHeading = page.locator('h2').filter({ hasText: 'Spot market' });
-
-    // Crypto price list heading (visible on desktop viewport only)
-    this.cryptoListHeading = page.locator('h3').filter({ hasText: "Today's top crypto prices" });
-
-    // Category tab buttons (Hot / Gainers / Losers)
+    this.cryptoListHeading  = page.locator('h3').filter({ hasText: "Today's top crypto prices" });
     this.tabHot     = page.getByRole('button', { name: 'Hot' });
     this.tabGainers = page.getByRole('button', { name: 'Gainers' });
     this.tabLosers  = page.getByRole('button', { name: 'Losers' });
-
-    // Active tab — has bg-lighter class applied
-    this.activeTab = page.locator('button.bg-lighter');
-
-    // Asset table
+    this.activeTab  = page.locator('button.bg-lighter');
     this.assetTable = page.locator('table');
     this.tableBody  = page.locator('tbody');
-
-    // Asset rows — TanStack Virtual adds data-index to each row
-    this.assetRows = page.locator('tbody tr[data-index]');
-
-    // Asset detail links inside rows (href="/explore/{SYMBOL}")
+    this.assetRows  = page.locator('tbody tr[data-index]');
     this.assetLinks = page.locator('tbody tr a[href^="/explore/"]');
   }
 
@@ -49,12 +23,6 @@ class TradingPage extends BasePage {
     await this.waitForTableData();
   }
 
-  /**
-   * Navigate to explore page and simultaneously capture the market data API response.
-   * API: GET /api/io/v1/marketdata/prices?quote=USDT
-   * Returns array of { base, close, closeFormatted, changePercent, changePercentFormatted, ... }
-   * @returns {Promise<Array>} raw market data array from the API
-   */
   async goToExploreAndCaptureApi() {
     logger.info('goToExploreAndCaptureApi: navigating and intercepting market data API');
     const responsePromise = this.page.waitForResponse(
@@ -69,10 +37,6 @@ class TradingPage extends BasePage {
     return marketData;
   }
 
-  /**
-   * Wait for virtual table rows to be rendered (data loaded from API).
-   * Wrapped in retry with exponential backoff to handle transient render delays.
-   */
   async waitForTableData() {
     await retry(async () => {
       await this.assetTable.waitFor({ state: 'visible', timeout: 20000 });
@@ -80,40 +44,28 @@ class TradingPage extends BasePage {
     }, 3, 200);
   }
 
-  /** @returns {Promise<boolean>} */
   async isSpotSectionVisible() {
     return this.spotSectionHeading.isVisible().catch(() => false);
   }
 
-  /** @returns {Promise<boolean>} */
   async isAssetTableVisible() {
     return this.assetTable.isVisible().catch(() => false);
   }
 
-  /** @returns {Promise<number>} */
   async getAssetRowCount() {
     return this.assetRows.count();
   }
 
-  /**
-   * Get the text of the currently active tab.
-   * @returns {Promise<string>}
-   */
   async getActiveTabText() {
     return (await this.activeTab.first().textContent() ?? '').trim();
   }
 
-  /**
-   * Click a category tab and wait for rows to reload.
-   * @param {'Hot'|'Gainers'|'Losers'} label
-   */
   async clickTab(label) {
     const tabMap = {
       Hot:     this.tabHot,
       Gainers: this.tabGainers,
       Losers:  this.tabLosers,
     };
-    // Intercept the API response that delivers the new tab's data
     const responsePromise = this.page.waitForResponse(
       res => res.url().includes('marketdata/prices') && res.status() === 200,
       { timeout: 15000 }
@@ -123,21 +75,10 @@ class TradingPage extends BasePage {
     await this.assetRows.first().waitFor({ state: 'visible', timeout: 10000 });
   }
 
-  /**
-   * Get the href of the Nth asset row link.
-   * @param {number} index
-   * @returns {Promise<string|null>}
-   */
   async getAssetLinkHref(index = 0) {
     return this.assetLinks.nth(index).getAttribute('href').catch(() => null);
   }
 
-  /**
-   * Get all asset link hrefs up to a given limit.
-   * Replaces direct assetLinks.count() + assetLinks.nth(i) access in tests.
-   * @param {number} [limit=5]
-   * @returns {Promise<string[]>}
-   */
   async getAssetLinkHrefs(limit = 5) {
     const count = Math.min(await this.assetLinks.count(), limit);
     const hrefs = [];
@@ -148,32 +89,15 @@ class TradingPage extends BasePage {
     return hrefs;
   }
 
-  /** @returns {Promise<boolean>} */
-  async isSpotSectionVisible() {
-    return this.spotSectionHeading.isVisible().catch(() => false);
-  }
-
-  /**
-   * Get the symbol (base currency) of the first visible asset row.
-   * Derived from the row's link href: /explore/BTC → "BTC"
-   * @returns {Promise<string>}
-   */
   async getFirstAssetSymbol() {
     const href = await this.assetLinks.first().getAttribute('href');
     return href.replace('/explore/', '').trim();
   }
 
-  /**
-   * Get the full text content of the row for a given asset symbol.
-   * Used to verify price and change % displayed in the UI.
-   * @param {string} symbol - e.g. "BTC"
-   * @returns {Promise<string>}
-   */
   async getAssetRowText(symbol) {
     const row = this.page.locator(`tbody tr:has(a[href="/explore/${symbol}"])`);
     return (await row.textContent() ?? '').replace(/\s+/g, ' ').trim();
   }
-
 }
 
 module.exports = { TradingPage };

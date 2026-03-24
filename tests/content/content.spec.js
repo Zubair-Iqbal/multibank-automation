@@ -1,23 +1,8 @@
-/**
- * Content Validation Tests — Part 4
- *
- * Validates:
- *  1. Homepage hero banner and bottom-page marketing sections
- *  2. Download CTA redirect to App Store / Google Play
- *  3. Footer structure and legal links
- *  4. Why MultiBank (Company) page — heading, stats, sections, pillar cards, CTA
- *
- * Test data: test-data/content.json (no hard-coded values in assertions)
- */
-
 const { test, expect } = require('../../src/fixtures');
 const { loadTestData } = require('../../src/utils/helpers');
 
 const data = loadTestData('content');
 
-// ─────────────────────────────────────────────────────────────
-// Suite 1 — Homepage Banners
-// ─────────────────────────────────────────────────────────────
 test.describe('Homepage Banners', () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.goToHome();
@@ -40,13 +25,9 @@ test.describe('Homepage Banners', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// Suite 2 — Download Section
-// ─────────────────────────────────────────────────────────────
 test.describe('Download Section', () => {
   test('clicking "Download the app" redirects to App Store or Google Play', async ({ homePage, context }) => {
     await homePage.goToHome();
-    // Deep-link opens the store in a new tab
     const [storePage] = await Promise.all([
       context.waitForEvent('page', { timeout: 20000 }),
       homePage.clickDownloadApp(),
@@ -56,14 +37,10 @@ test.describe('Download Section', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// Suite 3 — Footer
-// ─────────────────────────────────────────────────────────────
 test.describe('Footer', () => {
   test('footer renders with expected sections and legal links', async ({ homePage }) => {
     await homePage.goToHome();
 
-    // Both section headings present
     for (const section of data.footerSections) {
       expect(
         await homePage.isFooterSectionVisible(section),
@@ -71,7 +48,6 @@ test.describe('Footer', () => {
       ).toBe(true);
     }
 
-    // All expected legal links present with correct hrefs
     const hrefs = await homePage.getFooterLinkHrefs();
     for (const link of data.footerLegalLinks) {
       expect(hrefs, `Footer link "${link.text}" with href "${link.href}" not found`).toContain(link.href);
@@ -79,9 +55,6 @@ test.describe('Footer', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// Suite 4 — Why MultiBank (Company) Page
-// ─────────────────────────────────────────────────────────────
 test.describe('Why MultiBank — Company Page', () => {
   test.beforeEach(async ({ aboutPage }) => {
     await aboutPage.goToCompany();

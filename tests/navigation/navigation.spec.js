@@ -1,20 +1,8 @@
-/**
- * Navigation & Layout Tests — Part 2
- *
- * Validates the top navigation bar, logo, auth CTAs, and
- * that nav links route to the correct destinations.
- *
- * Test data: test-data/navigation.json (no hard-coded values in assertions)
- */
-
 const { test, expect } = require('../../src/fixtures');
 const { loadTestData } = require('../../src/utils/helpers');
 
 const data = loadTestData('navigation');
 
-// ─────────────────────────────────────────────────────────────
-// Suite 1 — Header & Nav Structure
-// ─────────────────────────────────────────────────────────────
 test.describe('Header & Navigation Structure', () => {
   test.beforeEach(async ({ navigationPage }) => {
     await navigationPage.goToHome();
@@ -38,15 +26,11 @@ test.describe('Header & Navigation Structure', () => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────
-// Suite 2 — Navigation Routing
-// ─────────────────────────────────────────────────────────────
 test.describe('Navigation Routing', () => {
   test.beforeEach(async ({ navigationPage }) => {
     await navigationPage.goToHome();
   });
 
-  // Parametrized: one test per nav item, driven entirely from test data
   for (const { text, href } of data.mainNavItems) {
     test(`clicking "${text}" navigates to the correct page`, async ({ navigationPage }) => {
       await navigationPage.clickNavLink(text, href);
