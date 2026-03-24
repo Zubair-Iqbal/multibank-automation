@@ -1,78 +1,67 @@
 const { BasePage } = require('./BasePage');
 
 /**
- * AboutPage - Models the "About Us → Why MultiBank" page.
+ * AboutPage - Models the Company / Why MultiBank page (/en-AE/company).
+ *
+ * The "Why MultiBank Group?" content lives at /en-AE/company (not /why-multibank).
+ * Main heading: <h1>Why MultiBank Group?</h1>
  */
 class AboutPage extends BasePage {
   constructor(page) {
     super(page);
 
-    // Page heading / hero
-    this.pageHeading = page.locator('h1, [class*="hero"] h2, [class*="heading"]').first();
-
-    // All section headings on the page
-    this.sectionHeadings = page.locator('h2, h3');
-
-    // Content sections / cards
-    this.contentSections = page.locator('section, [class*="section"], [class*="card"]');
+    this.pageHeading      = page.locator('h1').first();
+    this.sectionHeadings  = page.locator('h2, h3');
+    this.allHeadings      = page.locator('h1, h2, h3');
   }
 
-  /**
-   * Navigate to the Why MultiBank page.
-   * @param {string} path - relative path
-   */
-  async goToWhyMultiBank(path = '/why-multibank') {
-    await this.navigate(path);
-    await this.acceptCookiesIfPresent();
-  }
-
-  /**
-   * Get the main page heading text.
-   * @returns {Promise<string>}
-   */
-  async getPageHeading() {
+  async goToCompany() {
+    await this.navigate('/en-AE/company');
     await this.pageHeading.waitFor({ state: 'visible' });
+  }
+
+  /** @returns {Promise<string>} */
+  async getPageHeading() {
     return (await this.pageHeading.textContent() ?? '').trim();
   }
 
   /**
-   * Get all section heading texts on the page.
+   * Get all heading texts on the page.
    * @returns {Promise<string[]>}
    */
-  async getSectionHeadings() {
-    const count = await this.sectionHeadings.count();
+  async getAllHeadings() {
+    const count = await this.allHeadings.count();
     const texts = [];
     for (let i = 0; i < count; i++) {
-      const text = (await this.sectionHeadings.nth(i).textContent() ?? '').trim();
-      if (text) texts.push(text);
+      const t = (await this.allHeadings.nth(i).textContent() ?? '').trim();
+      if (t) texts.push(t);
     }
     return texts;
   }
 
   /**
-   * Check if a specific text appears anywhere on the page.
+   * Check if any heading contains the given text (case-insensitive).
+   * @param {string} text
+   * @returns {Promise<boolean>}
+   */
+  async hasHeadingContaining(text) {
+    const lc = text.toLowerCase();
+    const headings = await this.getAllHeadings();
+    return headings.some(h => h.toLowerCase().includes(lc));
+  }
+
+  /**
+   * Check if any element on the page contains the text.
    * @param {string} text
    * @returns {Promise<boolean>}
    */
   async hasText(text) {
-    return this.page.locator(`text="${text}"`).isVisible().catch(() => false);
+    return this.page.getByText(text, { exact: false }).isVisible().catch(() => false);
   }
 
-  /**
-   * Check if a section heading containing the given text is visible.
-   * @param {string} text
-   * @returns {Promise<boolean>}
-   */
-  async hasSectionWithText(text) {
-    return this.page.locator(`h1:has-text("${text}"), h2:has-text("${text}"), h3:has-text("${text}")`).isVisible().catch(() => false);
-  }
-
-  /**
-   * Get count of content sections.
-   * @returns {Promise<number>}
-   */
-  async getContentSectionCount() {
-    return this.contentSections.count();
+  /** @returns {Promise<number>} */
+  async getSectionHeadingCount() {
+    return this.sectionHeadings.count();
   }
 }
 

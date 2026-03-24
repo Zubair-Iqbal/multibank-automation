@@ -1,91 +1,109 @@
 const { BasePage } = require('./BasePage');
 
 /**
- * NavigationPage - Models the top navigation menu of the MultiBank trading platform.
+ * NavigationPage - Models the top navigation of mb.io.
+ *
+ * Actual DOM structure (desktop):
+ *   <header class="sticky ...">
+ *     <nav aria-label="Main">
+ *       <a href="/en-AE/explore">Explore</a>
+ *       <a href="/en-AE/features">Features</a>
+ *       <a href="/en-AE/company">Company</a>
+ *       <a href="https://token.multibankgroup.com/en">$MBG🔥</a>
+ *     </nav>
+ *     <a href="https://trade.mb.io/login">Sign in</a>
+ *     <a href="https://trade.mb.io/register">Sign up</a>
+ *   </header>
  */
 class NavigationPage extends BasePage {
   constructor(page) {
     super(page);
 
-    // Top-level nav container
-    this.navContainer = page.locator('header, nav').first();
-
-    // Nav links — broad selector to capture all anchor tags in nav
-    this.navLinks = page.locator('header a, nav a');
-
-    // Logo
-    this.logo = page.locator('header img, nav img, .logo, [class*="logo"]').first();
+    this.header        = page.locator('header.sticky');
+    this.mainNav       = page.locator('nav[aria-label="Main"]');
+    this.mainNavLinks  = page.locator('nav[aria-label="Main"] a');
+    // Logo: first anchor in the header (before the nav), contains the brand SVG/image
+    this.logo          = page.locator('header a').first();
+    this.signInLink    = page.locator('header a:has-text("Sign in"), header a:has-text("Sign In")').first();
+    this.signUpLink    = page.locator('header a:has-text("Sign up"), header a:has-text("Sign Up")').first();
+    this.exploreLink   = page.locator('nav[aria-label="Main"] a[href="/en-AE/explore"]');
+    this.featuresLink  = page.locator('nav[aria-label="Main"] a[href="/en-AE/features"]');
+    this.companyLink   = page.locator('nav[aria-label="Main"] a[href="/en-AE/company"]');
   }
 
-  /**
-   * Navigate to the homepage.
-   */
   async goToHome() {
-    await this.navigate('/');
-    await this.acceptCookiesIfPresent();
+    await this.navigate('/en-AE');
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isHeaderVisible() {
+    return this.header.isVisible();
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isMainNavVisible() {
+    return this.mainNav.isVisible();
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isLogoVisible() {
+    // Logo is the first anchor in the header
+    await this.header.waitFor({ state: 'visible' });
+    return this.logo.isVisible().catch(() => false);
   }
 
   /**
-   * Get all visible nav link texts.
+   * Returns visible text of each link inside the main nav.
    * @returns {Promise<string[]>}
    */
-  async getNavLinkTexts() {
-    await this.navLinks.first().waitFor({ state: 'visible' });
-    const count = await this.navLinks.count();
+  async getMainNavTexts() {
+    await this.mainNavLinks.first().waitFor({ state: 'visible' });
+    const count = await this.mainNavLinks.count();
     const texts = [];
     for (let i = 0; i < count; i++) {
-      const text = (await this.navLinks.nth(i).textContent() ?? '').trim();
-      if (text) texts.push(text);
+      const t = (await this.mainNavLinks.nth(i).textContent() ?? '').trim();
+      if (t) texts.push(t);
     }
     return texts;
   }
 
   /**
-   * Get all visible nav link hrefs.
+   * Returns href of each link inside the main nav.
    * @returns {Promise<string[]>}
    */
-  async getNavLinkHrefs() {
-    await this.navLinks.first().waitFor({ state: 'visible' });
-    const count = await this.navLinks.count();
+  async getMainNavHrefs() {
+    await this.mainNavLinks.first().waitFor({ state: 'visible' });
+    const count = await this.mainNavLinks.count();
     const hrefs = [];
     for (let i = 0; i < count; i++) {
-      const href = await this.navLinks.nth(i).getAttribute('href');
-      if (href) hrefs.push(href);
+      const h = await this.mainNavLinks.nth(i).getAttribute('href');
+      if (h) hrefs.push(h);
     }
     return hrefs;
   }
 
+  /** @returns {Promise<number>} */
+  async getMainNavLinkCount() {
+    return this.mainNavLinks.count();
+  }
+
   /**
-   * Click a nav item by its visible text.
-   * @param {string} text
+   * Click a main-nav link by its label and wait for navigation.
+   * @param {string} label
    */
-  async clickNavItem(text) {
-    await this.page.locator(`header a:has-text("${text}"), nav a:has-text("${text}")`).first().click();
+  async clickNavLink(label) {
+    await this.page.locator(`nav[aria-label="Main"] a:has-text("${label}")`).first().click();
     await this.waitForPageLoad();
   }
 
-  /**
-   * Check if the nav container is visible.
-   * @returns {Promise<boolean>}
-   */
-  async isNavVisible() {
-    return this.navContainer.isVisible();
+  /** @returns {Promise<boolean>} */
+  async isSignInVisible() {
+    return this.signInLink.isVisible().catch(() => false);
   }
 
-  /**
-   * Check if the logo is visible.
-   * @returns {Promise<boolean>}
-   */
-  async isLogoVisible() {
-    return this.logo.isVisible().catch(() => false);
-  }
-
-  /**
-   * Get count of nav links.
-   * @returns {Promise<number>}
-   */
-  async getNavLinkCount() {
-    return this.navLinks.count();
+  /** @returns {Promise<boolean>} */
+  async isSignUpVisible() {
+    return this.signUpLink.isVisible().catch(() => false);
   }
 }
 

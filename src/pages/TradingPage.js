@@ -1,86 +1,79 @@
 const { BasePage } = require('./BasePage');
 
 /**
- * TradingPage - Models the spot trading section of the MultiBank platform.
+ * TradingPage - Models the Explore / Spot Market section of mb.io.
+ *
+ * Located at /en-AE/explore.
+ * Category tabs: Hot | Gainers | Losers  (role="tab" or data-slot="tab")
+ * Asset cards rendered via React Query after JS hydration.
  */
 class TradingPage extends BasePage {
   constructor(page) {
     super(page);
 
-    // Category tabs (e.g., All, Forex, Crypto, Stocks)
-    this.categoryTabs = page.locator('[class*="tab"], [role="tab"], [class*="category"]');
+    // Section heading "Today's top crypto prices"
+    this.spotSectionHeading = page.locator('text="Today\'s top crypto prices"');
 
-    // Trading pair rows / cards in the table
-    this.tradingPairRows = page.locator('[class*="pair"], [class*="symbol"], [class*="instrument"], tr[class*="row"], tbody tr');
+    // Category tabs — Playwright matches role=tab or common tab implementations
+    this.categoryTabs = page.locator('[role="tab"], [data-slot="tab"], [data-state]');
 
-    // Spot trading section wrapper
-    this.spotSection = page.locator('[class*="spot"], [class*="market"], section').first();
+    // Individual asset rows / cards — loaded after hydration
+    this.assetCards = page.locator('[data-slot="card"], [class*="card"], [class*="asset"], [class*="row"]');
+
+    // Loading skeleton — wait for it to disappear before asserting data
+    this.skeleton = page.locator('[data-slot="skeleton"]');
+  }
+
+  async goToExplore() {
+    await this.navigate('/en-AE/explore');
+    await this.waitForHydration();
   }
 
   /**
-   * Navigate to the spot trading page.
+   * Wait for skeleton loaders to disappear (data has loaded).
    */
-  async goToSpot() {
-    await this.navigate('/');
-    await this.acceptCookiesIfPresent();
+  async waitForHydration() {
+    await this.page.waitForLoadState('domcontentloaded');
+    // Give React time to hydrate and fetch data
+    await this.page.waitForFunction(() => {
+      const skeletons = document.querySelectorAll('[data-slot="skeleton"]');
+      return skeletons.length === 0;
+    }, { timeout: 15000 }).catch(() => {
+      // Skeletons may not disappear fully — proceed anyway
+    });
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isSpotSectionVisible() {
+    return this.spotSectionHeading.isVisible().catch(() => false);
   }
 
   /**
-   * Get all visible category tab labels.
+   * Get visible category tab labels.
    * @returns {Promise<string[]>}
    */
   async getCategoryTabNames() {
-    await this.waitForPageLoad();
     const count = await this.categoryTabs.count();
     const names = [];
     for (let i = 0; i < count; i++) {
-      const text = (await this.categoryTabs.nth(i).textContent() ?? '').trim();
-      if (text) names.push(text);
+      const t = (await this.categoryTabs.nth(i).textContent() ?? '').trim();
+      if (t) names.push(t);
     }
     return names;
   }
 
   /**
-   * Click a category tab by name.
-   * @param {string} name
+   * Click a category tab by label.
+   * @param {string} label
    */
-  async clickCategoryTab(name) {
-    await this.page
-      .locator(`[class*="tab"]:has-text("${name}"), [role="tab"]:has-text("${name}")`)
-      .first()
-      .click();
-    await this.page.waitForTimeout(500);
+  async clickCategoryTab(label) {
+    await this.page.locator(`[role="tab"]:has-text("${label}"), [data-slot="tab"]:has-text("${label}")`).first().click();
+    await this.page.waitForTimeout(800);
   }
 
-  /**
-   * Get the count of visible trading pair rows.
-   * @returns {Promise<number>}
-   */
-  async getTradingPairCount() {
-    return this.tradingPairRows.count();
-  }
-
-  /**
-   * Get the first N trading pair names visible on screen.
-   * @param {number} [limit=5]
-   * @returns {Promise<string[]>}
-   */
-  async getTradingPairNames(limit = 5) {
-    const count = Math.min(await this.tradingPairRows.count(), limit);
-    const names = [];
-    for (let i = 0; i < count; i++) {
-      const text = (await this.tradingPairRows.nth(i).textContent() ?? '').trim();
-      if (text) names.push(text);
-    }
-    return names;
-  }
-
-  /**
-   * Check whether the spot section is present and visible.
-   * @returns {Promise<boolean>}
-   */
-  async isSpotSectionVisible() {
-    return this.spotSection.isVisible().catch(() => false);
+  /** @returns {Promise<number>} */
+  async getAssetCardCount() {
+    return this.assetCards.count();
   }
 }
 

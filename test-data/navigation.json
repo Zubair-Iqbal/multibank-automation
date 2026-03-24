@@ -1,20 +1,21 @@
 {
-  "expectedNavItems": [
-    "Trade",
-    "Markets",
-    "About Us",
-    "Download"
-  ],
-  "expectedNavItemsPartial": [
-    "Trade",
-    "Market"
-  ],
-  "baseUrl": "https://trade.multibank.io",
+  "baseUrl": "https://mb.io",
+  "homePath": "/en-AE",
   "routes": {
-    "home": "/",
-    "whyMultibank": "/why-multibank",
-    "markets": "/markets",
-    "download": "/download"
+    "explore":  "/en-AE/explore",
+    "features": "/en-AE/features",
+    "company":  "/en-AE/company",
+    "login":    "https://trade.mb.io/login",
+    "register": "https://trade.mb.io/register"
   },
-  "minNavLinkCount": 3
+  "mainNavItems": [
+    { "text": "Explore",  "href": "/en-AE/explore" },
+    { "text": "Features", "href": "/en-AE/features" },
+    { "text": "Company",  "href": "/en-AE/company" }
+  ],
+  "authNavItems": [
+    { "text": "Sign in",  "href": "https://trade.mb.io/login" },
+    { "text": "Sign up",  "href": "https://trade.mb.io/register" }
+  ],
+  "minMainNavCount": 3
 }

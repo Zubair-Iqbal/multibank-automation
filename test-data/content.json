@@ -1,12 +1,16 @@
 {
-  "appStoreUrlPattern": "apps.apple.com",
-  "googlePlayUrlPattern": "play.google.com",
-  "whyMultibankPath": "/why-multibank",
-  "expectedWhyMultibankSections": [
-    "Why MultiBank",
-    "Regulation",
-    "Security",
-    "Award"
+  "homePath": "/en-AE",
+  "companyPath": "/en-AE/company",
+  "downloadAppHref": "https://mbio.go.link/6OW91",
+  "googlePlayPackage": "com.multibank.app",
+  "whyMultiBankHeading": "Why MultiBank Group?",
+  "companyPageExpectedSections": [
+    "Why MultiBank Group"
   ],
-  "minContentSections": 3
+  "footerLegalLinks": [
+    { "text": "Cookie Policy",   "href": "/en-AE/about/cookie-policy-gcc" },
+    { "text": "Terms & Conditions", "href": "/en-AE/about/terms-conditions-gcc" },
+    { "text": "Privacy Policy",  "href": "/en-AE/about/privacy-policy-gcc" }
+  ],
+  "minFooterLinkCount": 5
 }

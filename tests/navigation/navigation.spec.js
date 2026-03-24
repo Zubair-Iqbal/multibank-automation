@@ -1,7 +1,10 @@
 /**
- * Navigation & Layout Tests
- * Validates top nav menu presence, items, and link destinations.
- * Part 2 of the MultiBank automation framework.
+ * Navigation & Layout Tests — Part 2
+ *
+ * Validates the top navigation bar, logo, auth CTAs, and
+ * that nav links route to the correct destinations.
+ *
+ * Test data: test-data/navigation.json (no hard-coded values in assertions)
  */
 
 const { test, expect } = require('../../src/fixtures');
@@ -9,38 +12,71 @@ const { loadTestData } = require('../../src/utils/helpers');
 
 const data = loadTestData('navigation');
 
-test.describe('Navigation & Layout', () => {
+// ─────────────────────────────────────────────────────────────
+// Suite 1 — Header & Nav Structure
+// ─────────────────────────────────────────────────────────────
+test.describe('Header & Navigation Structure', () => {
   test.beforeEach(async ({ navigationPage }) => {
     await navigationPage.goToHome();
   });
 
-  test('navigation bar is visible on homepage', async ({ navigationPage }) => {
-    expect(await navigationPage.isNavVisible()).toBe(true);
+  test('sticky header is visible on the homepage', async ({ navigationPage }) => {
+    expect(await navigationPage.isHeaderVisible()).toBe(true);
   });
 
-  test('navigation has minimum expected number of links', async ({ navigationPage }) => {
-    const count = await navigationPage.getNavLinkCount();
-    expect(count).toBeGreaterThanOrEqual(data.minNavLinkCount);
+  test('main navigation element is present', async ({ navigationPage }) => {
+    expect(await navigationPage.isMainNavVisible()).toBe(true);
   });
 
-  test('navigation contains expected items', async ({ navigationPage }) => {
-    const texts = await navigationPage.getNavLinkTexts();
-    const allTexts = texts.join(' ');
-    for (const item of data.expectedNavItemsPartial) {
-      expect(allTexts).toContain(item);
-    }
-  });
-
-  test('all nav links have valid href attributes', async ({ navigationPage }) => {
-    const hrefs = await navigationPage.getNavLinkHrefs();
-    expect(hrefs.length).toBeGreaterThan(0);
-    for (const href of hrefs) {
-      expect(href).toBeTruthy();
-      expect(href).not.toBe('#');
-    }
-  });
-
-  test('logo is visible in the header', async ({ navigationPage }) => {
+  test('logo (home link) is visible in the header', async ({ navigationPage }) => {
     expect(await navigationPage.isLogoVisible()).toBe(true);
+  });
+
+  test('logo links back to the home or root page', async ({ navigationPage }) => {
+    const href = await navigationPage.logo.getAttribute('href');
+    // Logo href can be '/' or '/en-AE' depending on locale routing
+    expect(href).toMatch(/^\/(en-AE)?$/);
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────
+// Suite 2 — Navigation Routing
+// ─────────────────────────────────────────────────────────────
+test.describe('Navigation Routing', () => {
+  test.beforeEach(async ({ navigationPage }) => {
+    await navigationPage.goToHome();
+  });
+
+  test('clicking "Explore" navigates to the explore page', async ({ navigationPage }) => {
+    await navigationPage.exploreLink.click();
+    await navigationPage.page.waitForURL(`**${data.routes.explore}`, { timeout: 15000 });
+    expect(navigationPage.getUrl()).toContain(data.routes.explore);
+  });
+
+  test('clicking "Features" navigates to the features page', async ({ navigationPage }) => {
+    await navigationPage.featuresLink.click();
+    await navigationPage.page.waitForURL(`**${data.routes.features}`, { timeout: 15000 });
+    expect(navigationPage.getUrl()).toContain(data.routes.features);
+  });
+
+  test('clicking "Company" navigates to the company page', async ({ navigationPage }) => {
+    await navigationPage.companyLink.click();
+    await navigationPage.page.waitForURL(`**${data.routes.company}`, { timeout: 15000 });
+    expect(navigationPage.getUrl()).toContain(data.routes.company);
+  });
+
+  test('navigating back from a sub-page returns to home', async ({ navigationPage }) => {
+    await navigationPage.exploreLink.click();
+    await navigationPage.page.waitForURL(`**${data.routes.explore}`, { timeout: 15000 });
+    await navigationPage.page.goBack();
+    await navigationPage.page.waitForURL(`**/en-AE`, { timeout: 15000 });
+    expect(navigationPage.getUrl()).toContain('/en-AE');
+  });
+
+  test('header remains visible after navigating to Explore page', async ({ navigationPage }) => {
+    await navigationPage.exploreLink.click();
+    await navigationPage.page.waitForURL(`**${data.routes.explore}`, { timeout: 15000 });
+    expect(await navigationPage.isHeaderVisible()).toBe(true);
   });
 });

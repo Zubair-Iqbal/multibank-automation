@@ -1,85 +1,77 @@
 const { BasePage } = require('./BasePage');
 
 /**
- * HomePage - Models the MultiBank platform landing page.
- * Covers marketing banners and download section.
+ * HomePage - Models the mb.io landing page (/en-AE).
+ *
+ * Download CTA uses a single deep-link: https://mbio.go.link/6OW91
+ * (routes to Play Store / App Store based on device UA).
  */
 class HomePage extends BasePage {
   constructor(page) {
     super(page);
 
-    // Marketing banners at the bottom of the page
-    this.banners = page.locator('[class*="banner"], [class*="promo"], [class*="hero"], section[class*="bottom"]');
+    // Primary download CTA button (deep-link)
+    this.downloadAppLink = page.locator('a[href="https://mbio.go.link/6OW91"]').first();
 
-    // Download section
-    this.downloadSection = page.locator('[class*="download"], [class*="app-store"], section:has(a[href*="apple"]), section:has(a[href*="google"])');
+    // "Download the app" button text variant
+    this.downloadAppButton = page.locator('[data-slot="button"]:has-text("Download the app")').first();
 
-    // App Store link
-    this.appStoreLink = page.locator('a[href*="apps.apple.com"], a[href*="apple.com/app"]').first();
+    // Footer nav
+    this.footerNav = page.locator('nav[aria-label="Footer"]');
 
-    // Google Play link
-    this.googlePlayLink = page.locator('a[href*="play.google.com"]').first();
+    // Footer links
+    this.footerLinks = page.locator('nav[aria-label="Footer"] a');
+
+    // Hero / banner — first section on the page
+    this.heroBanner = page.locator('section, main > div').first();
   }
 
-  /**
-   * Navigate to the homepage and dismiss overlays.
-   */
   async goToHome() {
-    await this.navigate('/');
-    await this.acceptCookiesIfPresent();
+    await this.navigate('/en-AE');
   }
 
-  /**
-   * Check if any marketing banner is visible.
-   * @returns {Promise<boolean>}
-   */
-  async areBannersVisible() {
-    return this.banners.first().isVisible().catch(() => false);
+  /** @returns {Promise<boolean>} */
+  async isHeroBannerVisible() {
+    return this.heroBanner.isVisible().catch(() => false);
   }
 
-  /**
-   * Scroll to and check download section visibility.
-   * @returns {Promise<boolean>}
-   */
-  async isDownloadSectionVisible() {
+  /** @returns {Promise<boolean>} */
+  async isDownloadLinkVisible() {
     await this.scrollToBottom();
-    return this.downloadSection.first().isVisible().catch(() => false);
+    return this.downloadAppLink.isVisible().catch(() => false);
+  }
+
+  /** @returns {Promise<string|null>} */
+  async getDownloadAppHref() {
+    await this.scrollToBottom();
+    return this.downloadAppLink.getAttribute('href').catch(() => null);
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isFooterVisible() {
+    await this.scrollToBottom();
+    return this.footerNav.isVisible().catch(() => false);
+  }
+
+  /** @returns {Promise<number>} */
+  async getFooterLinkCount() {
+    await this.scrollToBottom();
+    return this.footerLinks.count();
   }
 
   /**
-   * Get the href of the App Store link.
-   * @returns {Promise<string|null>}
+   * Get all footer link hrefs.
+   * @returns {Promise<string[]>}
    */
-  async getAppStoreHref() {
+  async getFooterLinkHrefs() {
     await this.scrollToBottom();
-    return this.appStoreLink.getAttribute('href').catch(() => null);
-  }
-
-  /**
-   * Get the href of the Google Play link.
-   * @returns {Promise<string|null>}
-   */
-  async getGooglePlayHref() {
-    await this.scrollToBottom();
-    return this.googlePlayLink.getAttribute('href').catch(() => null);
-  }
-
-  /**
-   * Check if the App Store link is visible.
-   * @returns {Promise<boolean>}
-   */
-  async isAppStoreLinkVisible() {
-    await this.scrollToBottom();
-    return this.appStoreLink.isVisible().catch(() => false);
-  }
-
-  /**
-   * Check if the Google Play link is visible.
-   * @returns {Promise<boolean>}
-   */
-  async isGooglePlayLinkVisible() {
-    await this.scrollToBottom();
-    return this.googlePlayLink.isVisible().catch(() => false);
+    const count = await this.footerLinks.count();
+    const hrefs = [];
+    for (let i = 0; i < count; i++) {
+      const h = await this.footerLinks.nth(i).getAttribute('href');
+      if (h) hrefs.push(h);
+    }
+    return hrefs;
   }
 }
 

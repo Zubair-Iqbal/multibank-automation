@@ -1,13 +1,11 @@
 {
+  "explorePath": "/en-AE/explore",
+  "spotSectionTitle": "Today's top crypto prices",
   "categories": [
-    "All",
-    "Forex",
-    "Crypto",
-    "Stocks",
-    "Indices",
-    "Commodities"
+    { "label": "Hot",     "value": "hot" },
+    { "label": "Gainers", "value": "gainers" },
+    { "label": "Losers",  "value": "losers" }
   ],
   "minPairCount": 1,
-  "expectedPairFormat": "XXX/YYY",
-  "spotPagePath": "/"
+  "assetFields": ["symbol", "name", "price", "changePercent"]
 }

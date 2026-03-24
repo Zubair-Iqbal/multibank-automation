@@ -19,7 +19,7 @@ module.exports = defineConfig({
   ],
 
   use: {
-    baseURL: 'https://trade.multibank.io',
+    baseURL: 'https://mb.io',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
