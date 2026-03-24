@@ -109,9 +109,13 @@ class TradingPage extends BasePage {
       Gainers: this.tabGainers,
       Losers:  this.tabLosers,
     };
+    // Intercept the API response that delivers the new tab's data
+    const responsePromise = this.page.waitForResponse(
+      res => res.url().includes('marketdata/prices') && res.status() === 200,
+      { timeout: 15000 }
+    );
     await tabMap[label].click();
-    // Wait briefly for the virtual table to re-render with new data
-    await this.page.waitForTimeout(800);
+    await responsePromise;
     await this.assetRows.first().waitFor({ state: 'visible', timeout: 10000 });
   }
 

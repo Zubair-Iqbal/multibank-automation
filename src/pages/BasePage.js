@@ -71,7 +71,7 @@ class BasePage {
    */
   async scrollToBottom() {
     await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await this.page.waitForTimeout(500);
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /**
