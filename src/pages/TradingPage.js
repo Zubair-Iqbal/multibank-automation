@@ -42,9 +42,6 @@ class TradingPage extends BasePage {
 
     // Asset detail links inside rows (href="/explore/{SYMBOL}")
     this.assetLinks = page.locator('tbody tr a[href^="/explore/"]');
-
-    // Table column definitions via data-header-column-id (thead is visually hidden)
-    this.tableColumnDefs = page.locator('thead th[data-header-column-id]');
   }
 
   async goToExplore() {
@@ -177,29 +174,6 @@ class TradingPage extends BasePage {
     return (await row.textContent() ?? '').replace(/\s+/g, ' ').trim();
   }
 
-  /**
-   * Get all data-header-column-id attribute values from thead.
-   * The thead is visually hidden but present in the DOM for structure validation.
-   * @returns {Promise<string[]>}
-   */
-  async getTableColumnIds() {
-    const count = await this.tableColumnDefs.count();
-    const ids = [];
-    for (let i = 0; i < count; i++) {
-      const id = await this.tableColumnDefs.nth(i).getAttribute('data-header-column-id');
-      if (id) ids.push(id);
-    }
-    return ids;
-  }
-
-  /**
-   * Check if a specific tab button is visible.
-   * @param {'Hot'|'Gainers'|'Losers'} label
-   * @returns {Promise<boolean>}
-   */
-  async isTabVisible(label) {
-    return this.page.getByRole('button', { name: label }).isVisible().catch(() => false);
-  }
 }
 
 module.exports = { TradingPage };

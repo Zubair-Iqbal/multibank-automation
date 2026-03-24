@@ -1,3 +1,4 @@
+/* globals window, document */
 const { logger } = require('../utils/logger');
 const { config } = require('../config');
 

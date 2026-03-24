@@ -11,9 +11,12 @@
     "test:trading": "playwright test tests/trading/",
     "test:content": "playwright test tests/content/",
     "report": "playwright show-report",
-    "install:browsers": "playwright install --with-deps"
+    "install:browsers": "playwright install --with-deps",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix"
   },
   "devDependencies": {
-    "@playwright/test": "^1.43.0"
+    "@playwright/test": "^1.43.0",
+    "eslint": "^8.57.1"
   }
 }

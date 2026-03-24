@@ -20,27 +20,6 @@ function loadTestData(fileName) {
 }
 
 /**
- * Check whether a URL is absolute (has a protocol).
- * @param {string} href
- * @returns {boolean}
- */
-function isAbsoluteUrl(href) {
-  return /^https?:\/\//i.test(href);
-}
-
-/**
- * Normalize a URL against a base for comparison.
- * @param {string} href
- * @param {string} base
- * @returns {string}
- */
-function normalizeUrl(href, base = 'https://mb.io') {
-  if (!href) return '';
-  if (isAbsoluteUrl(href)) return href;
-  return `${base}${href.startsWith('/') ? '' : '/'}${href}`;
-}
-
-/**
  * Retry an async function with exponential backoff.
  * Delay after attempt N = baseDelayMs * 2^(N-1)  (e.g. 200 → 400 → 800 ms)
  * @param {Function} fn           - Async function to retry
@@ -67,4 +46,4 @@ async function retry(fn, maxAttempts = 3, baseDelayMs = 200) {
   throw lastError;
 }
 
-module.exports = { loadTestData, isAbsoluteUrl, normalizeUrl, retry };
+module.exports = { loadTestData, retry };
