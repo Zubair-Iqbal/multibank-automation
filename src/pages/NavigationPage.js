@@ -35,6 +35,41 @@ class NavigationPage extends BasePage {
     await this.navigate('/en-AE');
   }
 
+  /**
+   * Get the logo's href attribute without exposing the locator.
+   * @returns {Promise<string|null>}
+   */
+  async getLogoHref() {
+    return this.logo.getAttribute('href');
+  }
+
+  /**
+   * Click the Explore nav link and wait for the URL to update.
+   * @param {string} expectedRoute - e.g. '/en-AE/explore'
+   */
+  async clickExplore(expectedRoute) {
+    await this.exploreLink.click();
+    await this.waitForUrl(`**${expectedRoute}`);
+  }
+
+  /**
+   * Click the Features nav link and wait for the URL to update.
+   * @param {string} expectedRoute
+   */
+  async clickFeatures(expectedRoute) {
+    await this.featuresLink.click();
+    await this.waitForUrl(`**${expectedRoute}`);
+  }
+
+  /**
+   * Click the Company nav link and wait for the URL to update.
+   * @param {string} expectedRoute
+   */
+  async clickCompany(expectedRoute) {
+    await this.companyLink.click();
+    await this.waitForUrl(`**${expectedRoute}`);
+  }
+
   /** @returns {Promise<boolean>} */
   async isHeaderVisible() {
     return this.header.isVisible();

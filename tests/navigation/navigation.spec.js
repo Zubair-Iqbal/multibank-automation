@@ -33,11 +33,9 @@ test.describe('Header & Navigation Structure', () => {
   });
 
   test('logo links back to the home or root page', async ({ navigationPage }) => {
-    const href = await navigationPage.logo.getAttribute('href');
-    // Logo href can be '/' or '/en-AE' depending on locale routing
-    expect(href).toMatch(/^\/(en-AE)?$/);
+    const href = await navigationPage.getLogoHref();
+    expect(href).toMatch(new RegExp(data.logoHrefPattern));
   });
-
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -49,34 +47,28 @@ test.describe('Navigation Routing', () => {
   });
 
   test('clicking "Explore" navigates to the explore page', async ({ navigationPage }) => {
-    await navigationPage.exploreLink.click();
-    await navigationPage.page.waitForURL(`**${data.routes.explore}`, { timeout: 15000 });
+    await navigationPage.clickExplore(data.routes.explore);
     expect(navigationPage.getUrl()).toContain(data.routes.explore);
   });
 
   test('clicking "Features" navigates to the features page', async ({ navigationPage }) => {
-    await navigationPage.featuresLink.click();
-    await navigationPage.page.waitForURL(`**${data.routes.features}`, { timeout: 15000 });
+    await navigationPage.clickFeatures(data.routes.features);
     expect(navigationPage.getUrl()).toContain(data.routes.features);
   });
 
   test('clicking "Company" navigates to the company page', async ({ navigationPage }) => {
-    await navigationPage.companyLink.click();
-    await navigationPage.page.waitForURL(`**${data.routes.company}`, { timeout: 15000 });
+    await navigationPage.clickCompany(data.routes.company);
     expect(navigationPage.getUrl()).toContain(data.routes.company);
   });
 
   test('navigating back from a sub-page returns to home', async ({ navigationPage }) => {
-    await navigationPage.exploreLink.click();
-    await navigationPage.page.waitForURL(`**${data.routes.explore}`, { timeout: 15000 });
-    await navigationPage.page.goBack();
-    await navigationPage.page.waitForURL(`**/en-AE`, { timeout: 15000 });
+    await navigationPage.clickExplore(data.routes.explore);
+    await navigationPage.goBack('**/en-AE');
     expect(navigationPage.getUrl()).toContain('/en-AE');
   });
 
   test('header remains visible after navigating to Explore page', async ({ navigationPage }) => {
-    await navigationPage.exploreLink.click();
-    await navigationPage.page.waitForURL(`**${data.routes.explore}`, { timeout: 15000 });
+    await navigationPage.clickExplore(data.routes.explore);
     expect(await navigationPage.isHeaderVisible()).toBe(true);
   });
 });

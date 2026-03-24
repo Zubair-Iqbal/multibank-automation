@@ -42,6 +42,20 @@ class AboutPage extends BasePage {
   async isPillarCardVisible(title) {
     return this.page.locator('span').filter({ hasText: title }).isVisible().catch(() => false);
   }
+
+  /** @returns {Promise<boolean>} */
+  async isPageHeadingVisible() {
+    return this.pageH1.isVisible().catch(() => false);
+  }
+
+  /**
+   * Click the "Get in touch" CTA and wait for navigation to the contact page.
+   * @param {string} expectedRoute - e.g. '/en-AE/support/contact-us'
+   */
+  async clickGetInTouch(expectedRoute) {
+    await this.getInTouch.click();
+    await this.waitForUrl(`**${expectedRoute}`);
+  }
 }
 
 module.exports = { AboutPage };

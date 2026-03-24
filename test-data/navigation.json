@@ -17,5 +17,6 @@
     { "text": "Sign in",  "href": "https://trade.mb.io/login" },
     { "text": "Sign up",  "href": "https://trade.mb.io/register" }
   ],
-  "minMainNavCount": 3
+  "minMainNavCount": 3,
+  "logoHrefPattern": "^/(en-AE)?$"
 }

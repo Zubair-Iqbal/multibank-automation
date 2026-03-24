@@ -24,9 +24,10 @@ test.describe('Homepage Banners', () => {
   });
 
   test('hero section renders with correct heading and CTAs', async ({ homePage }) => {
-    await expect(homePage.heroHeading).toHaveText(data.heroHeading);
-    await expect(homePage.downloadLink).toBeVisible();
-    await expect(homePage.registerLink).toBeVisible();
+    const heading = await homePage.getHeroHeadingText();
+    expect(heading).toBe(data.heroHeading);
+    expect(await homePage.isDownloadLinkVisible()).toBe(true);
+    expect(await homePage.isRegisterLinkVisible()).toBe(true);
   });
 
   test('bottom-page marketing sections are all visible', async ({ homePage }) => {
@@ -48,7 +49,7 @@ test.describe('Download Section', () => {
     // Deep-link opens the store in a new tab
     const [storePage] = await Promise.all([
       context.waitForEvent('page', { timeout: 20000 }),
-      homePage.downloadLink.click(),
+      homePage.clickDownloadApp(),
     ]);
     await storePage.waitForLoadState('domcontentloaded');
     expect(storePage.url()).toMatch(/play\.google\.com|apps\.apple\.com/);
@@ -87,7 +88,7 @@ test.describe('Why MultiBank — Company Page', () => {
   });
 
   test('page heading and all key statistics are present', async ({ aboutPage }) => {
-    await expect(aboutPage.pageH1).toBeVisible();
+    expect(await aboutPage.isPageHeadingVisible()).toBe(true);
     for (const stat of data.companyStats) {
       expect(
         await aboutPage.isStatVisible(stat),
@@ -120,9 +121,8 @@ test.describe('Why MultiBank — Company Page', () => {
     }
   });
 
-  test('clicking "Get in touch" navigates to the contact page', async ({ aboutPage, page }) => {
-    await aboutPage.getInTouch.click();
-    await page.waitForURL(`**${data.contactUsHref}`, { timeout: 15000 });
-    expect(page.url()).toContain(data.contactUsHref);
+  test('clicking "Get in touch" navigates to the contact page', async ({ aboutPage }) => {
+    await aboutPage.clickGetInTouch(data.contactUsHref);
+    expect(aboutPage.getUrl()).toContain(data.contactUsHref);
   });
 });

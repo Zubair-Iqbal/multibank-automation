@@ -23,7 +23,7 @@ test.describe('Spot Market Section', () => {
   });
 
   test('spot market section heading is visible', async ({ tradingPage }) => {
-    await expect(tradingPage.spotSectionHeading).toBeVisible();
+    expect(await tradingPage.isSpotSectionVisible()).toBe(true);
   });
 
   test('asset table is visible and rendered', async ({ tradingPage }) => {
@@ -96,10 +96,9 @@ test.describe('Asset Data Structure', () => {
   });
 
   test('asset detail links follow the /explore/{SYMBOL} pattern', async ({ tradingPage }) => {
-    const count = Math.min(await tradingPage.assetLinks.count(), 5);
-    expect(count).toBeGreaterThan(0);
-    for (let i = 0; i < count; i++) {
-      const href = await tradingPage.assetLinks.nth(i).getAttribute('href');
+    const hrefs = await tradingPage.getAssetLinkHrefs(5);
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) {
       expect(href).toMatch(/^\/explore\/[A-Z0-9]+$/);
     }
   });

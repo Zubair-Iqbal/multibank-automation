@@ -127,6 +127,26 @@ class BasePage {
       await el.click();
     }
   }
+
+  /**
+   * Wait for the page URL to match a pattern.
+   * Encapsulates page.waitForURL so tests never access this.page directly.
+   * @param {string|RegExp} pattern
+   * @param {number} [timeout]
+   */
+  async waitForUrl(pattern, timeout = 15000) {
+    await this.page.waitForURL(pattern, { timeout });
+  }
+
+  /**
+   * Navigate back in browser history and wait for a URL pattern.
+   * @param {string|RegExp} expectedPattern
+   * @param {number} [timeout]
+   */
+  async goBack(expectedPattern, timeout = 15000) {
+    await this.page.goBack();
+    await this.page.waitForURL(expectedPattern, { timeout });
+  }
 }
 
 module.exports = { BasePage };

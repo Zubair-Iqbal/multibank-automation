@@ -125,6 +125,27 @@ class TradingPage extends BasePage {
   }
 
   /**
+   * Get all asset link hrefs up to a given limit.
+   * Replaces direct assetLinks.count() + assetLinks.nth(i) access in tests.
+   * @param {number} [limit=5]
+   * @returns {Promise<string[]>}
+   */
+  async getAssetLinkHrefs(limit = 5) {
+    const count = Math.min(await this.assetLinks.count(), limit);
+    const hrefs = [];
+    for (let i = 0; i < count; i++) {
+      const href = await this.assetLinks.nth(i).getAttribute('href');
+      if (href) hrefs.push(href);
+    }
+    return hrefs;
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isSpotSectionVisible() {
+    return this.spotSectionHeading.isVisible().catch(() => false);
+  }
+
+  /**
    * Get the symbol (base currency) of the first visible asset row.
    * Derived from the row's link href: /explore/BTC → "BTC"
    * @returns {Promise<string>}

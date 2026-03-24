@@ -24,6 +24,29 @@ class HomePage extends BasePage {
     await this.navigate('/en-AE');
   }
 
+  /** @returns {Promise<string>} */
+  async getHeroHeadingText() {
+    return (await this.heroHeading.textContent() ?? '').trim();
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isDownloadLinkVisible() {
+    return this.downloadLink.isVisible().catch(() => false);
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isRegisterLinkVisible() {
+    return this.registerLink.isVisible().catch(() => false);
+  }
+
+  /**
+   * Click the "Download the app" CTA.
+   * Note: this opens a new tab — caller is responsible for capturing it via context.waitForEvent('page').
+   */
+  async clickDownloadApp() {
+    await this.downloadLink.click();
+  }
+
   /**
    * Check if a bottom-page section heading is visible after scrolling.
    * @param {string} text
