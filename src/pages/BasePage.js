@@ -1,3 +1,5 @@
+const { logger } = require('../utils/logger');
+
 /**
  * BasePage - Foundation class for all Page Objects.
  * Provides shared navigation, waiting utilities, and element helpers.
@@ -15,6 +17,7 @@ class BasePage {
    * @param {string} path
    */
   async navigate(path = '/') {
+    logger.info('navigate', { path });
     await this.page.goto(path);
     await this.waitForPageLoad();
   }

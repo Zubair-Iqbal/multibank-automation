@@ -4,6 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { logger } = require('./logger');
 
 /**
  * Load test data from the test-data directory.
@@ -56,7 +57,10 @@ async function retry(fn, maxAttempts = 3, baseDelayMs = 200) {
       lastError = err;
       if (attempt < maxAttempts) {
         const delay = baseDelayMs * Math.pow(2, attempt - 1);
+        logger.warn('retry: attempt failed, retrying', { attempt, maxAttempts, delay, error: err.message });
         await new Promise((res) => setTimeout(res, delay));
+      } else {
+        logger.error('retry: all attempts exhausted', { maxAttempts, error: err.message });
       }
     }
   }

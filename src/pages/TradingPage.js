@@ -1,5 +1,6 @@
 const { BasePage } = require('./BasePage');
 const { retry } = require('../utils/helpers');
+const { logger } = require('../utils/logger');
 
 /**
  * TradingPage - Models the Spot Market section on /en-AE/explore.
@@ -58,6 +59,7 @@ class TradingPage extends BasePage {
    * @returns {Promise<Array>} raw market data array from the API
    */
   async goToExploreAndCaptureApi() {
+    logger.info('goToExploreAndCaptureApi: navigating and intercepting market data API');
     const responsePromise = this.page.waitForResponse(
       res => res.url().includes('marketdata/prices') && res.status() === 200,
       { timeout: 20000 }
@@ -65,6 +67,7 @@ class TradingPage extends BasePage {
     await this.page.goto('/en-AE/explore');
     const response = await responsePromise;
     const marketData = await response.json();
+    logger.debug('goToExploreAndCaptureApi: API response received', { count: marketData.length });
     await this.waitForTableData();
     return marketData;
   }
