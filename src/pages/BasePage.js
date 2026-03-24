@@ -1,4 +1,5 @@
 const { logger } = require('../utils/logger');
+const { config } = require('../config');
 
 /**
  * BasePage - Foundation class for all Page Objects.
@@ -34,7 +35,7 @@ class BasePage {
    * @param {string} selector
    * @param {number} [timeout]
    */
-  async waitForVisible(selector, timeout = 15000) {
+  async waitForVisible(selector, timeout = config.timeouts.action) {
     await this.page.waitForSelector(selector, { state: 'visible', timeout });
   }
 
@@ -137,7 +138,7 @@ class BasePage {
    * @param {string|RegExp} pattern
    * @param {number} [timeout]
    */
-  async waitForUrl(pattern, timeout = 15000) {
+  async waitForUrl(pattern, timeout = config.timeouts.navigation) {
     await this.page.waitForURL(pattern, { timeout });
   }
 
@@ -146,7 +147,7 @@ class BasePage {
    * @param {string|RegExp} expectedPattern
    * @param {number} [timeout]
    */
-  async goBack(expectedPattern, timeout = 15000) {
+  async goBack(expectedPattern, timeout = config.timeouts.navigation) {
     await this.page.goBack();
     await this.page.waitForURL(expectedPattern, { timeout });
   }

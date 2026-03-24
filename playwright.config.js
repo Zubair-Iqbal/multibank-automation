@@ -1,5 +1,6 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
+const { config } = require('./src/config');
 
 module.exports = defineConfig({
   testDir: './tests',
@@ -9,7 +10,7 @@ module.exports = defineConfig({
   workers: process.env.CI ? 2 : undefined,
   timeout: 60000,
   expect: {
-    timeout: 15000,
+    timeout: config.timeouts.expect,
   },
 
   reporter: [
@@ -19,12 +20,12 @@ module.exports = defineConfig({
   ],
 
   use: {
-    baseURL: 'https://mb.io',
+    baseURL: config.baseUrl,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
-    actionTimeout: 15000,
-    navigationTimeout: 30000,
+    actionTimeout:     config.timeouts.action,
+    navigationTimeout: config.timeouts.navigation,
   },
 
   projects: [
