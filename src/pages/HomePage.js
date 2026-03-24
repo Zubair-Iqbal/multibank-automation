@@ -3,60 +3,45 @@ const { BasePage } = require('./BasePage');
 /**
  * HomePage - Models the mb.io landing page (/en-AE).
  *
- * Download CTA uses a single deep-link: https://mbio.go.link/6OW91
- * (routes to Play Store / App Store based on device UA).
+ * Hero heading:   <h3 class="gradient-text">Crypto for everyone</h3>
+ * Download CTA:   <a href="https://mbio.go.link/6OW91">Download the app</a>  (hero only)
+ * Register CTA:   <a href="https://trade.mb.io/register">Open an account</a>
+ * Bottom sections: h3 headings below the fold
+ * Footer:          <footer> > <nav aria-label="Footer">
  */
 class HomePage extends BasePage {
   constructor(page) {
     super(page);
 
-    // Primary download CTA button (deep-link)
-    this.downloadAppLink = page.locator('a[href="https://mbio.go.link/6OW91"]').first();
-
-    // "Download the app" button text variant
-    this.downloadAppButton = page.locator('[data-slot="button"]:has-text("Download the app")').first();
-
-    // Footer nav
-    this.footerNav = page.locator('nav[aria-label="Footer"]');
-
-    // Footer links
-    this.footerLinks = page.locator('nav[aria-label="Footer"] a');
-
-    // Hero / banner — first section on the page
-    this.heroBanner = page.locator('section, main > div').first();
+    this.heroHeading  = page.locator('h3.gradient-text').filter({ hasText: 'Crypto for everyone' });
+    this.downloadLink = page.locator('a[href="https://mbio.go.link/6OW91"]').first();
+    this.registerLink = page.locator('a[href="https://trade.mb.io/register"]').filter({ hasText: 'Open an account' });
+    this.footerNav    = page.locator('footer nav[aria-label="Footer"]');
+    this.footerLinks  = page.locator('footer nav[aria-label="Footer"] a');
   }
 
   async goToHome() {
     await this.navigate('/en-AE');
   }
 
-  /** @returns {Promise<boolean>} */
-  async isHeroBannerVisible() {
-    return this.heroBanner.isVisible().catch(() => false);
+  /**
+   * Check if a bottom-page section heading is visible after scrolling.
+   * @param {string} text
+   * @returns {Promise<boolean>}
+   */
+  async isBottomSectionVisible(text) {
+    await this.scrollToBottom();
+    return this.page.locator('h2, h3').filter({ hasText: text }).isVisible().catch(() => false);
   }
 
-  /** @returns {Promise<boolean>} */
-  async isDownloadLinkVisible() {
+  /**
+   * Check if a footer section heading is visible.
+   * @param {string} name
+   * @returns {Promise<boolean>}
+   */
+  async isFooterSectionVisible(name) {
     await this.scrollToBottom();
-    return this.downloadAppLink.isVisible().catch(() => false);
-  }
-
-  /** @returns {Promise<string|null>} */
-  async getDownloadAppHref() {
-    await this.scrollToBottom();
-    return this.downloadAppLink.getAttribute('href').catch(() => null);
-  }
-
-  /** @returns {Promise<boolean>} */
-  async isFooterVisible() {
-    await this.scrollToBottom();
-    return this.footerNav.isVisible().catch(() => false);
-  }
-
-  /** @returns {Promise<number>} */
-  async getFooterLinkCount() {
-    await this.scrollToBottom();
-    return this.footerLinks.count();
+    return this.page.locator(`footer h3:has-text("${name}")`).isVisible().catch(() => false);
   }
 
   /**

@@ -3,65 +3,44 @@ const { BasePage } = require('./BasePage');
 /**
  * AboutPage - Models the Company / Why MultiBank page (/en-AE/company).
  *
- * The "Why MultiBank Group?" content lives at /en-AE/company (not /why-multibank).
- * Main heading: <h1>Why MultiBank Group?</h1>
+ * H1:   "Why MultiBank Group?"
+ * Stats: "$2 trillion" | "2,000,000+" | "25+" | "2005"
+ * H2s:  "A tradition of global leadership" | "Innovation with purpose" | "Integrity built into every decision"
+ * H3s:  "The strength behind MultiBank Group" | "Community & Media"
+ * Cards: "Regulation at our core" | "Proven track record" | "Secure & trusted"
+ * CTA:  <a href="/en-AE/support/contact-us">Get in touch</a>
  */
 class AboutPage extends BasePage {
   constructor(page) {
     super(page);
 
-    this.pageHeading      = page.locator('h1').first();
-    this.sectionHeadings  = page.locator('h2, h3');
-    this.allHeadings      = page.locator('h1, h2, h3');
+    this.pageH1     = page.locator('h1').filter({ hasText: 'Why MultiBank Group?' });
+    this.getInTouch = page.locator('a[href="/en-AE/support/contact-us"]').filter({ hasText: 'Get in touch' });
   }
 
   async goToCompany() {
     await this.navigate('/en-AE/company');
-    await this.pageHeading.waitFor({ state: 'visible' });
+    await this.pageH1.waitFor({ state: 'visible', timeout: 15000 });
   }
 
-  /** @returns {Promise<string>} */
-  async getPageHeading() {
-    return (await this.pageHeading.textContent() ?? '').trim();
+  /** @returns {Promise<boolean>} */
+  async isStatVisible(stat) {
+    return this.page.getByText(stat, { exact: false }).isVisible().catch(() => false);
   }
 
-  /**
-   * Get all heading texts on the page.
-   * @returns {Promise<string[]>}
-   */
-  async getAllHeadings() {
-    const count = await this.allHeadings.count();
-    const texts = [];
-    for (let i = 0; i < count; i++) {
-      const t = (await this.allHeadings.nth(i).textContent() ?? '').trim();
-      if (t) texts.push(t);
-    }
-    return texts;
+  /** @returns {Promise<boolean>} */
+  async isH2SectionVisible(text) {
+    return this.page.locator('h2').filter({ hasText: text }).isVisible().catch(() => false);
   }
 
-  /**
-   * Check if any heading contains the given text (case-insensitive).
-   * @param {string} text
-   * @returns {Promise<boolean>}
-   */
-  async hasHeadingContaining(text) {
-    const lc = text.toLowerCase();
-    const headings = await this.getAllHeadings();
-    return headings.some(h => h.toLowerCase().includes(lc));
+  /** @returns {Promise<boolean>} */
+  async isH3SectionVisible(text) {
+    return this.page.locator('h3').filter({ hasText: text }).isVisible().catch(() => false);
   }
 
-  /**
-   * Check if any element on the page contains the text.
-   * @param {string} text
-   * @returns {Promise<boolean>}
-   */
-  async hasText(text) {
-    return this.page.getByText(text, { exact: false }).isVisible().catch(() => false);
-  }
-
-  /** @returns {Promise<number>} */
-  async getSectionHeadingCount() {
-    return this.sectionHeadings.count();
+  /** @returns {Promise<boolean>} */
+  async isPillarCardVisible(title) {
+    return this.page.locator('span').filter({ hasText: title }).isVisible().catch(() => false);
   }
 }
 

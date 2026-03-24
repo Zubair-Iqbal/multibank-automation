@@ -1,16 +1,39 @@
 {
   "homePath": "/en-AE",
   "companyPath": "/en-AE/company",
+
+  "heroHeading": "Crypto for everyone",
   "downloadAppHref": "https://mbio.go.link/6OW91",
-  "googlePlayPackage": "com.multibank.app",
-  "whyMultiBankHeading": "Why MultiBank Group?",
-  "companyPageExpectedSections": [
-    "Why MultiBank Group"
+  "registerHref": "https://trade.mb.io/register",
+
+  "bottomSections": [
+    "Securely build your portfolio",
+    "Smarter ways to trade and grow",
+    "Catch your next trade"
   ],
+
+  "footerSections": ["Legal", "Support"],
   "footerLegalLinks": [
-    { "text": "Cookie Policy",   "href": "/en-AE/about/cookie-policy-gcc" },
+    { "text": "Cookie Policy",      "href": "/en-AE/about/cookie-policy-gcc" },
     { "text": "Terms & Conditions", "href": "/en-AE/about/terms-conditions-gcc" },
-    { "text": "Privacy Policy",  "href": "/en-AE/about/privacy-policy-gcc" }
+    { "text": "Privacy Policy",     "href": "/en-AE/about/privacy-policy-gcc" }
   ],
-  "minFooterLinkCount": 5
+
+  "companyH1": "Why MultiBank Group?",
+  "companyStats": ["$2 trillion", "2,000,000+", "25+", "2005"],
+  "companyH2Sections": [
+    "A tradition of global leadership",
+    "Innovation with purpose",
+    "Integrity built into every decision"
+  ],
+  "companyH3Sections": [
+    "The strength behind MultiBank Group",
+    "Community & Media"
+  ],
+  "companyPillarCards": [
+    "Regulation at our core",
+    "Proven track record",
+    "Secure & trusted"
+  ],
+  "contactUsHref": "/en-AE/support/contact-us"
 }
