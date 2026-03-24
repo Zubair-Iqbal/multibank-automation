@@ -29,6 +29,12 @@ class NavigationPage extends BasePage {
     this.exploreLink   = page.locator('nav[aria-label="Main"] a[href="/en-AE/explore"]');
     this.featuresLink  = page.locator('nav[aria-label="Main"] a[href="/en-AE/features"]');
     this.companyLink   = page.locator('nav[aria-label="Main"] a[href="/en-AE/company"]');
+
+    // Mobile-only elements
+    this.mobileMenuButton = page.locator('button[aria-label="Open menu"]');
+    this.mobileMenuDialog = page.locator('[role="dialog"]');
+    this.mobileMenuClose  = page.locator('button[aria-label="Close menu"]');
+    this.mobileMenuLinks  = page.locator('[role="dialog"] nav a');
   }
 
   async goToHome() {
@@ -139,6 +145,59 @@ class NavigationPage extends BasePage {
   /** @returns {Promise<boolean>} */
   async isSignUpVisible() {
     return this.signUpLink.isVisible().catch(() => false);
+  }
+
+  // ── Mobile helpers ────────────────────────────────────────────
+
+  /** @returns {Promise<boolean>} */
+  async isMobileMenuButtonVisible() {
+    return this.mobileMenuButton.isVisible().catch(() => false);
+  }
+
+  /**
+   * Open the mobile slide-in menu and wait for the dialog to appear.
+   */
+  async openMobileMenu() {
+    await this.mobileMenuButton.click();
+    await this.mobileMenuDialog.waitFor({ state: 'visible', timeout: 10000 });
+  }
+
+  /** @returns {Promise<boolean>} */
+  async isMobileMenuOpen() {
+    return this.mobileMenuDialog.isVisible().catch(() => false);
+  }
+
+  /**
+   * Close the mobile menu via the close button.
+   */
+  async closeMobileMenu() {
+    await this.mobileMenuClose.click();
+    await this.mobileMenuDialog.waitFor({ state: 'hidden', timeout: 10000 });
+  }
+
+  /**
+   * Get all href values from the mobile menu nav links.
+   * @returns {Promise<string[]>}
+   */
+  async getMobileMenuLinkHrefs() {
+    await this.mobileMenuLinks.first().waitFor({ state: 'visible', timeout: 10000 });
+    const count = await this.mobileMenuLinks.count();
+    const hrefs = [];
+    for (let i = 0; i < count; i++) {
+      const h = await this.mobileMenuLinks.nth(i).getAttribute('href');
+      if (h) hrefs.push(h);
+    }
+    return hrefs;
+  }
+
+  /**
+   * Click a link inside the mobile menu dialog by its href and wait for navigation.
+   * @param {string} href      - e.g. '/en-AE/explore'
+   * @param {string} expectedRoute - passed to waitForUrl
+   */
+  async clickMobileMenuLink(href, expectedRoute) {
+    await this.page.locator(`[role="dialog"] nav a[href="${href}"]`).click();
+    await this.waitForUrl(`**${expectedRoute}`);
   }
 }
 
